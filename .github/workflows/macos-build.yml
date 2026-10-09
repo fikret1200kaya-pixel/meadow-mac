@@ -1,0 +1,96 @@
+name: Meadow Mac Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Sources/**'
+      - 'Resources/**'
+      - 'Tests/**'
+      - 'build.sh'
+      - 'README_TR.txt'
+      - '.github/workflows/macos-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: meadow-macos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and verify (${{ matrix.cpu }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            cpu: Apple-Silicon
+          - runner: macos-15-intel
+            cpu: Intel
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Check scripts and control bridge
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n build.sh MAC-ICIN-BASLAT.command
+          node --check Resources/web/bundle.js
+          node --check Resources/web/mac-bridge.js
+          node Tests/bridge.test.cjs
+          plutil -lint Resources/Info.plist
+
+      - name: Build universal macOS app
+        shell: bash
+        run: bash build.sh
+
+      - name: Verify both CPU architectures and local signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          app='dist/Meadow Collection.app'
+          xcrun lipo -verify_arch arm64 x86_64 "$app/Contents/MacOS/MeadowCollection"
+          codesign --verify --strict "$app"
+          file "$app/Contents/MacOS/MeadowCollection"
+          otool -L "$app/Contents/MacOS/MeadowCollection"
+          test -s "$app/Contents/Resources/web/bundle.js"
+          test -s "$app/Contents/Resources/web/mac-bridge.js"
+
+      - name: Package app preserving Mac permissions
+        shell: bash
+        run: |
+          set -euo pipefail
+          ditto -c -k --sequesterRsrc --keepParent \
+            'dist/Meadow Collection.app' \
+            'dist/Meadow-Collection-Universal.zip'
+
+      - name: Upload downloadable app
+        uses: actions/upload-artifact@v6
+        with:
+          name: Meadow-Mac-Universal-built-on-${{ matrix.cpu }}
+          path: dist/Meadow-Collection-Universal.zip
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Report test scope
+        if: always()
+        shell: bash
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'REPORT'
+          ### Meadow Collection — macOS
+          This job checks JavaScript/shell syntax, control-bridge behavior,
+          native Swift compilation, both CPU slices, local signature and packaging.
+          A green result does **not** certify desktop rendering, GPU performance,
+          Finder icon layering, mouse interaction, Spaces or sleep/wake behavior.
+          Download the artifact, extract its outer ZIP, then extract the contained
+          Meadow-Collection-Universal.zip to obtain the app.
+          This is an ad-hoc signed test app, not a notarized distribution build.
+          REPORT

@@ -1,0 +1,30 @@
+DOĞRULAMA DURUMU — 9 Ekim 2026
+
+GEÇEN KONTROLLER (Linux ortamı)
+- bundle.js ve mac-bridge.js: Node JavaScript sözdizimi kontrolü.
+- Duraklat/devam et: bekleyen animasyonlar kaybolmadan devam ediyor.
+- Animasyon içinde yeniden istenen kare: sonraki karede çağrılıyor.
+- Duraklatma sırasında iptal edilen kare: devam edince çalışmıyor.
+- Fare koordinatı aktarımı, duraklatılmışken aktarımı engelleme, sahneden çıkış.
+- Sahne/mod komutlarının doğru DOM seçicisine gitmesi ve geçersiz sahne reddi.
+- build.sh ve MAC-ICIN-BASLAT.command: bash sözdizimi kontrolü.
+- Info.plist: plistlib ile parse edildi; kimlik/yürütülebilir adı eşleşiyor.
+- bundle.js: tek uyarlama, başlangıç seçeneklerini Mac kabuğundan okuyabilmesi.
+  Sahne geometrileri, malzemeler ve shader kodları değiştirilmedi.
+- HTML: iç içe geçmiş fazladan html/body/doctypes temizlendi.
+- ZIP dosyası bütünlüğü ve başlatıcı çalıştırma izinleri kontrol edildi.
+
+YAPILAMAYAN KONTROLLER
+- Native Swift/AppKit/WebKit derleme ve uygulamayı açma (macOS SDK yok).
+- Gerçek WebGL/GPU görüntü testi: yerel tarayıcı yok; tarayıcı indirme girişimi
+  geçerli arşiv sağlayamadı. JavaScript testi render testi değildir.
+- Intel/Apple Silicon çalıştırma, Finder simgeleri, çoklu ekran/Spaces,
+  Stage Manager, ekran uykusu dönüşü, gerçek FPS ve enerji ölçümü.
+
+MAC'TE İLK DENEME
+1. MAC-ICIN-BASLAT.command ile derleyip açın.
+2. Beş sahneyi ve dört saat modunu menüden sırayla seçin.
+3. Masaüstündeki dosyaları açıp sürükleyin; normal çalıştıklarını kontrol edin.
+4. Fareyle çimen/su tepkisini deneyin; tıklama efektini Önizleme'de deneyin.
+5. Duraklat / devam et, ekran uyku / uyandırma, çıkış işlemlerini deneyin.
+6. Mac modeli, macOS sürümü ve hata ekranını geri gönderin.

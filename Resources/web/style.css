@@ -1,0 +1,15 @@
+html,body{margin:0;height:100%;overflow:hidden;background:#000;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+#modes{position:fixed;top:2.2vh;left:50%;transform:translateX(-50%);display:flex;gap:4px;padding:5px;border-radius:999px;
+  background:rgba(40,50,70,.32);border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 4px 24px rgba(0,0,0,.15);transition:opacity .6s}
+#modes button{all:unset;cursor:pointer;display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:999px;font-size:14px;font-weight:500;
+  color:rgba(255,255,255,.72);transition:background .3s,color .3s}
+#modes button svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#modes button.on{background:rgba(255,255,255,.92);color:#2a3350;box-shadow:0 1px 6px rgba(0,0,0,.2)}
+body.hide-ui #modes{opacity:0;pointer-events:none}
+#scenes{position:fixed;top:2.2vh;left:2vw;display:flex;gap:4px;padding:5px;border-radius:999px;background:rgba(40,50,70,.32);border:1px solid rgba(255,255,255,.28);box-shadow:0 4px 24px rgba(0,0,0,.15);transition:opacity .6s;max-width:42vw;overflow:hidden}
+#scenes button{all:unset;cursor:pointer;padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:rgba(255,255,255,.72);white-space:nowrap;transition:background .3s,color .3s}
+#scenes button.on{background:rgba(255,255,255,.92);color:#2a3350;box-shadow:0 1px 6px rgba(0,0,0,.2)}
+body.hide-ui #scenes{opacity:0;pointer-events:none}
+@media (max-width:1500px){#scenes{top:calc(2.2vh + 56px);left:50%;transform:translateX(-50%);max-width:94vw}}
