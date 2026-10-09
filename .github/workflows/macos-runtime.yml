@@ -1,0 +1,40 @@
+name: Meadow Mac Runtime Test
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Tests/native-smoke.swift'
+      - 'Tests/run-native-smoke.sh'
+      - '.github/workflows/macos-runtime.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  visual-test:
+    name: Native WebKit scenes and snapshots
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Build production application
+        run: bash build.sh
+      - name: Launch native app, exercise scenes and capture snapshots
+        run: bash Tests/run-native-smoke.sh
+      - name: Upload screenshots and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: Meadow-Mac-Runtime-Results
+          path: test-results/
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Summarize results
+        if: always()
+        run: |
+          if [ -f test-results/report.json ]; then
+            cat test-results/report.json >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'No runtime report was produced. Review the logs; no visual pass is claimed.' >> "$GITHUB_STEP_SUMMARY"
+          fi
